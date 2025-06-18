@@ -3,37 +3,172 @@ jQuery(document).ready(function($) {
     let current_event_id = $('.collin-event-packages-wrapper').data('event-id');
     const ajax_obj = collin_event_ajax_obj || {};
 
-    // --- NUOVA FUNZIONE DI SUPPORTO PER SINCRONIZZARE L'HOTEL ---
-    function syncHotelLocation(selectedShuttleSlug) {
-        if (!selectedShuttleSlug) return;
-
-        let bestMatchSlug = '';
+    // --- NUOVA FUNZIONE PER AGGIORNARE I LIMITI DEGLI EXTRA ---
+    function updateExtraLimits() {
+        const $detailsWrapper = $(detailsContainer);
         
-        // Itera su ogni radio button dei luoghi degli hotel disponibili
-        $('.collin-hotel-location-radio').each(function() {
-            const $hotelRadio = $(this);
-            const hotelSlug = $hotelRadio.val(); // Esempio: 'amsterdam'
-
-            // Controlla se lo slug della navetta (più specifico) INIZIA CON lo slug dell'hotel (più generico)
-            if (selectedShuttleSlug.startsWith(hotelSlug)) {
-                // Se questo abbinamento è più lungo del migliore trovato finora, è un candidato migliore.
-                // Questo assicura la scelta più specifica in caso di ambiguità (es. 'ber' e 'berlin')
-                if (hotelSlug.length > bestMatchSlug.length) {
-                    bestMatchSlug = hotelSlug;
+        // Calcola la quantità totale dei pacchetti
+        let totalPackageQty = 0;
+        
+        // Conta da prodotti semplici pacchetto
+        $detailsWrapper.find('.collin-simple-package-item .quantity-input').each(function() {
+            if (!$(this).is(':disabled')) {
+                totalPackageQty += parseInt($(this).val()) || 0;
+            }
+        });
+        
+        // Conta da pacchetti variabili
+        $detailsWrapper.find('.collin-package-qty').each(function() {
+            if (!$(this).is(':disabled')) {
+                totalPackageQty += parseInt($(this).val()) || 0;
+            }
+        });
+        
+        // Aggiorna i limiti degli extra
+        $detailsWrapper.find('.collin-extra-qty').each(function() {
+            const $extraInput = $(this);
+            const originalMax = parseInt($extraInput.data('original-max')) || -1;
+            let newMax = totalPackageQty;
+            
+            // Se c'è un limite originale del prodotto, usa il minore tra i due
+            if (originalMax > -1 && (newMax === 0 || originalMax < newMax)) {
+                newMax = originalMax;
+            }
+            
+            // Se non ci sono pacchetti, disabilita gli extra
+            if (totalPackageQty === 0) {
+                $extraInput.attr('max', 0).val(0).prop('disabled', true);
+                $extraInput.closest('.quantity-control').find('.quantity-btn').prop('disabled', true);
+            } else {
+                $extraInput.attr('max', newMax).prop('disabled', false);
+                $extraInput.closest('.quantity-control').find('.quantity-btn').prop('disabled', false);
+                
+                // Se la quantità attuale è maggiore del nuovo limite, riducila
+                const currentVal = parseInt($extraInput.val()) || 0;
+                if (currentVal > newMax) {
+                    $extraInput.val(newMax);
                 }
             }
         });
-
-        // Se alla fine del ciclo abbiamo trovato un abbinamento valido...
-        if (bestMatchSlug) {
-            const $matchingHotelRadio = $('.collin-hotel-location-radio[value="' + bestMatchSlug + '"]');
-            
-            // ...e non è già selezionato...
-            if ($matchingHotelRadio.length > 0 && !$matchingHotelRadio.is(':checked') && !$matchingHotelRadio.is(':disabled')) {
-                // ...lo selezioniamo e scateniamo l'evento 'change' per caricare le camere.
-                $matchingHotelRadio.prop('checked', true).trigger('change');
+    }
+    function handlePackageAttributeSelection($radio) {
+        const $packageWrapper = $radio.closest('.collin-package-wrapper');
+        const productId = $packageWrapper.data('product-id');
+        const packageType = $packageWrapper.data('package-type');
+        const $currentSelection = $radio.closest('.collin-package-attribute-selection');
+        const currentIndex = parseInt($currentSelection.data('attribute-index'));
+        
+        // Nascondi tutte le selezioni successive
+        $packageWrapper.find('.collin-package-attribute-selection').each(function() {
+            const thisIndex = parseInt($(this).data('attribute-index'));
+            if (thisIndex > currentIndex) {
+                $(this).find('label').hide();
+                $(this).find('input[type="radio"]').prop('checked', false);
             }
+        });
+        
+        // Nascondi il selettore quantità
+        $packageWrapper.find('.collin-package-quantity-wrapper').hide();
+        
+        // Raccogli tutti gli attributi selezionati
+        let selectedAttributes = {};
+        let allRequiredSelected = true;
+        
+        $packageWrapper.find('.collin-package-attribute-selection').each(function() {
+            const attrSlug = $(this).data('attribute-slug');
+            const $checkedRadio = $(this).find('input[type="radio"]:checked');
+            if ($checkedRadio.length) {
+                selectedAttributes[attrSlug] = $checkedRadio.val();
+            } else if ($(this).data('attribute-index') <= currentIndex) {
+                allRequiredSelected = false;
+            }
+        });
+        
+        if (!ajax_obj.product_variations_data || !ajax_obj.product_variations_data[productId]) {
+            return;
         }
+        
+        const allVariations = ajax_obj.product_variations_data[productId];
+        
+        // Trova le variazioni che corrispondono agli attributi selezionati finora
+        let matchingVariations = allVariations.filter(variation => {
+            let isMatch = true;
+            for (const attrSlug in selectedAttributes) {
+                if (variation.attributes['attribute_' + attrSlug] !== selectedAttributes[attrSlug]) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            return isMatch;
+        });
+        
+        // Se c'è un attributo successivo da mostrare
+        const $nextSelection = $packageWrapper.find('.collin-package-attribute-selection[data-attribute-index="' + (currentIndex + 1) + '"]');
+        if ($nextSelection.length > 0) {
+            // Raccogli i valori disponibili per l'attributo successivo dalle variazioni filtrate
+            const nextAttrSlug = $nextSelection.data('attribute-slug');
+            const availableValues = new Set();
+            
+            matchingVariations.forEach(variation => {
+                const attrValue = variation.attributes['attribute_' + nextAttrSlug];
+                if (attrValue) {
+                    availableValues.add(attrValue);
+                }
+            });
+            
+            // Mostra solo le opzioni disponibili per l'attributo successivo
+            $nextSelection.find('label').each(function() {
+                const $label = $(this);
+                const $input = $label.find('input');
+                const value = $input.val();
+                
+                if (availableValues.has(value)) {
+                    $label.show();
+                } else {
+                    $label.hide();
+                    $input.prop('checked', false);
+                }
+            });
+        } else if (matchingVariations.length === 1) {
+            // Tutte le selezioni completate, mostra quantità e dettagli
+            const selectedVariation = matchingVariations[0];
+            showPackageQuantitySelector($packageWrapper, selectedVariation);
+        }
+        
+        validateAddToCartButton();
+    }
+    
+    function showPackageQuantitySelector($packageWrapper, variationData) {
+        const $quantityWrapper = $packageWrapper.find('.collin-package-quantity-wrapper');
+        const $variationInfo = $quantityWrapper.find('.selected-variation-info');
+        const $qtyInput = $quantityWrapper.find('.collin-package-qty');
+        
+        // Aggiorna le informazioni della variazione
+        $variationInfo.html(`
+            <div class="variation-price">${variationData.price_html}</div>
+            ${variationData.is_disabled ? '<span class="sold-out-message">Sold Out</span>' : ''}
+        `);
+        
+        // Configura l'input quantità
+        $qtyInput.data('variation-id', variationData.variation_id);
+        if (variationData.max_qty > -1) {
+            $qtyInput.attr('max', variationData.max_qty);
+        } else {
+            $qtyInput.removeAttr('max');
+        }
+        
+        if (variationData.is_disabled) {
+            $qtyInput.prop('disabled', true);
+            $quantityWrapper.find('.quantity-btn').prop('disabled', true);
+        } else {
+            $qtyInput.prop('disabled', false);
+            $quantityWrapper.find('.quantity-btn').prop('disabled', false);
+        }
+        
+        $quantityWrapper.show();
+        
+        // Aggiorna i limiti degli extra quando cambia la quantità dei pacchetti
+        updateExtraLimits();
     }
 
     // --- Funzione per aggiornare la quantità ---
@@ -83,193 +218,20 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // --- Gestore per input diretto quantità e cambio dropdown hotel ---
-    $('body').on('change input', '.collin-event-details-container .quantity-input', validateAddToCartButton);
-    
-// --- GESTORE PER LA SELEZIONE DEL LUOGO/HOTEL ---
-$('body').on('change', '.collin-hotel-location-radio', function() {
-    const $locationRadio = $(this);
-    const selectedLocationSlug = $locationRadio.val();
-    const $hotelWrapper = $locationRadio.closest('.collin-hotel-wrapper');
-    const productId = $hotelWrapper.data('product-id');
-    const $roomsContainer = $hotelWrapper.find('.collin-hotel-rooms-container');
-    const $roomOptionsWrapper = $roomsContainer.find('.collin-hotel-room-options');
-    
-    // Pulisci le selezioni precedenti e nascondi il selettore quantità
-    $roomOptionsWrapper.empty();
-    $hotelWrapper.find('.hotel-quantity-control').remove(); // Rimuoviamo il vecchio controllo quantità
-    validateAddToCartButton();
-
-    if (!productId || !ajax_obj.product_variations_data || !ajax_obj.product_variations_data[productId]) {
-        return; // Dati non disponibili
-    }
-
-    const allVariations = ajax_obj.product_variations_data[productId];
-    
-    // Filtra le variazioni (camere) per il luogo selezionato
-    const matchingRooms = allVariations.filter(variation => {
-        return variation.attributes['attribute_pa_luogo'] === selectedLocationSlug;
-    });
-
-    if (matchingRooms.length > 0) {
-        let roomsHtml = '';
-        matchingRooms.forEach(function(room_data) {
-            const variation_id = room_data.variation_id;
-            const is_disabled = room_data.is_disabled;
-            const radio_id = 'hotel-room-' + variation_id;
-
-            // Estrai il nome della camera dagli attributi (tutto ciò che non è 'pa_luogo')
-            let room_name = '';
-            for (const attr_key in room_data.attributes) {
-                if (attr_key !== 'attribute_pa_luogo') {
-                    // Cerca il nome completo della camera nel display_name completo
-                    const name_parts = room_data.display_name.split(' - ');
-                    const location_part_index = Object.keys(room_data.attributes).indexOf('attribute_pa_luogo');
-                    if (name_parts[1-location_part_index]) { // Semplice euristica per trovare l'altro attributo
-                       room_name = name_parts[1-location_part_index];
-                    } else {
-                       room_name = room_data.display_name;
-                    }
-                    break;
-                }
-            }
-
-            roomsHtml += `
-                <label class="radio" for="${radio_id}">
-                    <input 
-                        type="radio" 
-                        class="collin-hotel-variation-radio" 
-                        name="hotel_room_selection_${productId}" 
-                        id="${radio_id}"
-                        value="${variation_id}"
-                        ${is_disabled ? 'disabled' : ''}
-                        data-price-html="${room_data.price_html.replace(/<[^>]*>?/gm, '')}"
-                        data-max-qty="${room_data.max_qty > -1 ? room_data.max_qty : ''}"
-                        data-variation-id="${variation_id}"
-                        data-description="${room_data.description || ''}"
-                    >
-                    <span>
-                        ${room_name}
-                        ${is_disabled ? ' (Esaurito)' : ''}
-                    </span>
-                </label>
-            `;
-        });
-        
-        $roomOptionsWrapper.html(roomsHtml);
-        $roomsContainer.show();
-    } else {
-        $roomOptionsWrapper.html('<p>Nessuna camera disponibile per questo hotel.</p>');
-        $roomsContainer.show();
-    }
-});
-   /* VECCHIA GESTIONE HOTEL SELECT
-    $('body').on('change', '.collin-event-details-container .collin-hotel-variation-dropdown', function() {
-        const $dropdown = $(this);
-        const $productItem = $dropdown.closest('.collin-hotel-product-item');
-        const $qtyControl = $productItem.find('.hotel-quantity-control');
-        const $qtyInput = $qtyControl.find('.collin-hotel-selected-variation-qty');
-        const $priceDisplay = $qtyControl.find('.variation-price-hotel');
-        const selectedOption = $dropdown.find('option:selected');
-
-        if ($dropdown.val() && selectedOption.length && !selectedOption.is(':disabled')) {
-            const priceHtml = selectedOption.data('price-html') || '';
-            const maxQty = selectedOption.data('max-qty') !== undefined ? selectedOption.data('max-qty') : '';
-            
-            $priceDisplay.html(priceHtml ? (priceHtml + ' ') : '').show();
-            $qtyInput.val(1); 
-            
-            if (maxQty !== '' && !isNaN(parseInt(maxQty))) {
-                $qtyInput.attr('max', parseInt(maxQty));
-            } else {
-                $qtyInput.removeAttr('max');
-            }
-
-            $qtyInput.data('variation-id', $dropdown.val()); 
-            $qtyControl.show();
-            $qtyInput.prop('disabled', false);
-            $qtyControl.find('.quantity-btn').prop('disabled', false);
-        } else {
-            $qtyControl.hide();
-            $priceDisplay.hide();
-            $qtyInput.val(0); 
-            $qtyInput.removeData('variation-id');
-            $qtyInput.prop('disabled', true);
-            $qtyControl.find('.quantity-btn').prop('disabled', true);
-        }
-        validateAddToCartButton();
-    });*/
- 
-    // --- NUOVO: Gestore per i radio button dell'hotel (AGGIORNATO CON DESCRIZIONE) ---
-    $('body').on('change', '.collin-hotel-variation-radio', function() {
-        const $radio = $(this);
-        const $productItem = $radio.closest('.collin-product-item, .collin-hotel-wrapper');
-        
-        // Rimuovi eventuali controlli quantità esistenti per evitare duplicati
-        $productItem.find('.hotel-quantity-control').remove();
-
-        if ($radio.is(':checked') && !$radio.is(':disabled')) {
-            const variationDesc = $radio.data('description') || '';
-            const variationName = $radio.closest('label').find('span').text().trim();
-            const priceHtml = $radio.data('price-html') || '';
-            const maxQty = $radio.data('max-qty') !== undefined ? $radio.data('max-qty') : '';
-            const variationId = $radio.data('variation-id');
-
-            // Crea dinamicamente il HTML per il controllo quantità
-            const quantityControlHtml = `
-                <div class="quantity-control hotel-quantity-control" style="margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: space-between; height: auto; align-items: center;">
-                    <div class="hotel-selection-details" style="flex-basis: 50%; min-width: 250px; line-height: 1.4;">
-                        <div class="selected-variation-description" style="font-weight: bold; font-size: 1.1em;"></div>
-                        <div class="selected-variation-name-small" style="font-size: 0.9em; opacity: 0.8; font-style: italic;"></div>
-                        <span class="variation-price-hotel" style="font-size: 1em; color: #555; display: block; margin-top: 5px;"></span>
-                    </div>
-                    <div class="qnt__select" style="display: flex; align-items: center; flex-basis: 50%; min-width: 200px; justify-content: space-between;">
-                        <h3 class="mr-2 black" style="text-transform:capitalize; margin-bottom: 0; margin-right: 10px; font-size:1em;">Quantità</h3>
-                        
-                        <div class="bottoni" style="display: flex; align-items: center; flex-basis: 50%; min-width: 200px; justify-content: flex-end;">
-                            <button type="button" class="quantity-btn quantity-minus" aria-label="Diminuisci quantità">-</button>
-                            <input type="number" class="collin-hotel-selected-variation-qty quantity-input" value="1" min="1" name="quantity_hotel_selected" aria-label="Quantità Hotel" data-variation-id="${variationId}">
-                            <button type="button" class="quantity-btn quantity-plus" aria-label="Aumenta quantità">+</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Inserisci il controllo quantità dopo il contenitore delle opzioni
-            $radio.closest('.collin-hotel-room-options, .collin-hotel-product-item').append(quantityControlHtml);
-            
-            const $newQtyControl = $productItem.find('.hotel-quantity-control');
-            const $descDisplay = $newQtyControl.find('.selected-variation-description');
-            const $nameDisplay = $newQtyControl.find('.selected-variation-name-small');
-            const $priceDisplay = $newQtyControl.find('.variation-price-hotel');
-            const $qtyInput = $newQtyControl.find('.collin-hotel-selected-variation-qty');
-
-            if (variationDesc) {
-                $descDisplay.html(variationDesc);
-                $nameDisplay.html(variationName);
-            } else {
-                $descDisplay.html(variationName);
-                $nameDisplay.html('');
-            }
-            
-            $priceDisplay.html(priceHtml);
-            if (maxQty !== '') {
-                $qtyInput.attr('max', maxQty);
-            }
-        }
+    // --- Gestore per input diretto quantità ---
+    $('body').on('change input', '.collin-event-details-container .quantity-input', function() {
+        updateExtraLimits();
         validateAddToCartButton();
     });
+    
+    // --- NUOVO GESTORE PER I PACCHETTI CON ATTRIBUTI ---
+    $('body').on('change', '.collin-package-attribute-radio', function() {
+        handlePackageAttributeSelection($(this));
+    });
+
     // --- Gestore per TUTTI i radio button di prodotti variabili (Navetta standard E complessa) ---
     $('body').on('change', '.collin-complex-shuttle-radio', function() {
         const $radio = $(this);
-         // --- BLOCCO DI CODICE DA AGGIUNGERE ---
-        const attributeSlug = $radio.closest('.collin-shuttle-attribute-selection').data('attribute-slug');
-        // Sincronizza l'hotel solo se l'attributo modificato è il luogo di partenza
-        if (attributeSlug === 'luogo-di-partenza') { 
-            syncHotelLocation($radio.val());
-        }
-        // --- FINE BLOCCO DI CODICE DA AGGIUNGERE ---
-
         const parentProductId = $radio.closest('.collin-event-product-section').data('product-id');
         const $shuttleWrapper = $radio.closest('.collin-shuttle-wrapper');
         const $dateContainer = $shuttleWrapper.find('.collin-shuttle-dates-container');
@@ -354,7 +316,6 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
 
  $('body').on('change', '.collin-shuttle-location-radio', function() {
         const $radio = $(this);
-        syncHotelLocation($radio.val()); 
         const selectedLocation = $radio.val();
         const $wrapper = $radio.closest('.collin-shuttle-wrapper'); 
         // Nascondi tutti i contenitori di date
@@ -371,8 +332,8 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
         // Riesegui la validazione del pulsante Aggiungi al Carrello
         validateAddToCartButton();
     });
+    
     // --- Funzione per validare e abilitare/disabilitare il pulsante Aggiungi al Carrello ---
-    // In assets/js/frontend.js, sostituisci l'intera funzione con questa
     function validateAddToCartButton() {
         let canAddToCart = false;
         const $detailsWrapper = $(detailsContainer);
@@ -382,95 +343,24 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
             return;
         }
 
-        const currentPackageType = $detailsWrapper.data('current-package-type');
-        const currentPackageBaseProductIds = $detailsWrapper.data('current-package-base-ids') || [];
-        let itemsSelectedCount = 0;
-
-        // Logica per pacchetti composti (che richiedono la selezione di più prodotti base)
-        if (currentPackageType === 'shuttle_hotel' || currentPackageType === 'complete_package') {
-            if (currentPackageBaseProductIds.length === 0) {
-                canAddToCart = false;
-            } else {
-                let satisfiedBaseProducts = {};
-                currentPackageBaseProductIds.forEach(id => satisfiedBaseProducts[parseInt(id)] = false);
-
-                // 1. Controlla Prodotti Semplici
-                $detailsWrapper.find('.collin-simple-product-qty').each(function() {
-                    const $input = $(this);
-                    const productId = parseInt($input.data('product-id'));
-                    if (currentPackageBaseProductIds.includes(productId) && !$input.is(':disabled') && parseInt($input.val()) > 0) {
-                        satisfiedBaseProducts[productId] = true;
-                    }
-                });
-
-                // 2. Controlla Prodotti Variabili (Navette e Ticket)
-                $detailsWrapper.find('.collin-event-product-section').each(function() {
-                    const sectionProductId = parseInt($(this).data('product-id'));
-                    if (!currentPackageBaseProductIds.includes(sectionProductId)) return; // Salta se non è un prodotto base del pacchetto
-
-                    // Logica per Navette (complesse e standard)
-                    const $shuttleWrapper = $(this).find('.collin-shuttle-wrapper');
-                    if ($shuttleWrapper.length > 0) {
-                        let allShuttleAttributesSelected = true;
-                        $shuttleWrapper.find('.collin-shuttle-attribute-selection, .collin-shuttle-locations-wrapper').each(function() {
-                            if ($(this).find('input[type="radio"]:checked').length === 0) {
-                                allShuttleAttributesSelected = false;
-                                return false;
-                            }
-                        });
-
-                        if (allShuttleAttributesSelected && $shuttleWrapper.find('.collin-variation-qty, .collin-shuttle-variation-qty').filter(function() { return parseInt($(this).val()) > 0; }).length > 0) {
-                            satisfiedBaseProducts[sectionProductId] = true;
-                        }
-                    } 
-                    // Logica per altri variabili (es. Ticket)
-                    else if ($(this).find('.collin-variation-qty').filter(function() { return parseInt($(this).val()) > 0; }).length > 0) {
-                        satisfiedBaseProducts[sectionProductId] = true;
-                    }
-                });
-                
-                // 3. NUOVA GESTIONE HOTEL (sia multi-luogo che semplice)
-                const hotelProductId = parseInt($detailsWrapper.find('.collin-hotel-wrapper, .collin-hotel-product-item').first().data('product-id'));
-                if (currentPackageBaseProductIds.includes(hotelProductId)) {
-                    const isMultiLocation = $detailsWrapper.find('.collin-hotel-wrapper').length > 0;
-                    if (isMultiLocation) {
-                        // Hotel multi-luogo
-                        const isLocationSelected = $detailsWrapper.find('.collin-hotel-location-radio:checked').length > 0;
-                        const isRoomSelected = $detailsWrapper.find('.collin-hotel-variation-radio:checked').length > 0;
-                        if (isLocationSelected && isRoomSelected && parseInt($detailsWrapper.find('.collin-hotel-selected-variation-qty').val()) > 0) {
-                            satisfiedBaseProducts[hotelProductId] = true;
-                        }
-                    } else {
-                        // Hotel semplice (con radio)
-                        const isRoomSelected = $detailsWrapper.find('.collin-hotel-variation-radio:checked').length > 0;
-                        if (isRoomSelected && parseInt($detailsWrapper.find('.collin-hotel-selected-variation-qty').val()) > 0) {
-                            satisfiedBaseProducts[hotelProductId] = true;
-                        }
-                    }
-                }
-
-
-                // Verifica finale per pacchetti composti
-                let allBaseSatisfied = true;
-                for (const baseId of currentPackageBaseProductIds) {
-                    if (!satisfiedBaseProducts[parseInt(baseId)]) {
-                        allBaseSatisfied = false;
-                        break;
-                    }
-                }
-                canAddToCart = allBaseSatisfied;
-            }
-
-        } else { // Logica per pacchetti singoli (o nessun pacchetto, solo selezione libera)
-            let totalQty = 0;
-            
-            // Somma quantità da tutti gli input visibili e abilitati
-            $detailsWrapper.find('.quantity-input:visible:not(:disabled)').each(function() {
-                totalQty += parseInt($(this).val()) || 0;
-            });
-            
-            canAddToCart = totalQty > 0;
-        }
+        let totalQty = 0;
+        
+        // Conta quantità da prodotti semplici
+        $detailsWrapper.find('.collin-simple-product-qty:visible:not(:disabled)').each(function() {
+            totalQty += parseInt($(this).val()) || 0;
+        });
+        
+        // Conta quantità da prodotti variabili standard
+        $detailsWrapper.find('.collin-variation-qty:visible:not(:disabled)').each(function() {
+            totalQty += parseInt($(this).val()) || 0;
+        });
+        
+        // Conta quantità da pacchetti
+        $detailsWrapper.find('.collin-package-qty:visible:not(:disabled)').each(function() {
+            totalQty += parseInt($(this).val()) || 0;
+        });
+        
+        canAddToCart = totalQty > 0;
         
         // Applica lo stato finale al pulsante
         $detailsWrapper.find('.collin-event-add-to-cart-button').prop('disabled', !canAddToCart);
@@ -505,32 +395,32 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
                         }
                     }
 
-                    const hotelSliderElement = document.querySelector('.hotel-gallery-slider');
-
-                    if (hotelSliderElement) {
-                        new Swiper(hotelSliderElement, {
-                            loop: true, 
+                    // Inizializza i limiti degli extra
+                    updateExtraLimits();
+                    
+                    // Inizializza Swiper per tutte le gallerie prodotto
+                    const productSliders = document.querySelectorAll('.product-gallery-slider');
+                    productSliders.forEach(function(sliderElement) {
+                        new Swiper(sliderElement, {
+                            loop: true,
+                            autoplay: {
+                                delay: 5000,
+                                disableOnInteraction: false,
+                            },
                             navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
+                                nextEl: sliderElement.querySelector('.swiper-button-next'),
+                                prevEl: sliderElement.querySelector('.swiper-button-prev'),
                             },
                             pagination: {
-                                el: '.swiper-pagination',
+                                el: sliderElement.querySelector('.swiper-pagination'),
                                 clickable: true,
                             },
                             keyboard: { 
                                 enabled: true,
                             },
                         });
-                    }
-
-                    // Inizializza lo stato del dropdown hotel, se presente
-                    $(detailsContainer).find('.collin-hotel-variation-dropdown').trigger('change');
+                    });
                     
-                    // Triggera un cambio su un radio della navetta se già selezionato per inizializzare le date
-                    // Questo è importante per i pacchetti dove la navetta è pre-selezionata o per il ricaricamento
-                    $(detailsContainer).find('.collin-shuttle-attribute-selection input[type="radio"]:checked').first().trigger('change');
-
                     validateAddToCartButton();
                 } else {
                     const errorMsg = response.data && response.data.message ? response.data.message : (ajax_obj.error_load_text || 'Errore caricamento prodotti.');
@@ -542,95 +432,8 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
             }
         });
     }
-    
-    // --- Funzione Modale per Conflitto Ticket --- 
-    function showTicketConflictChoiceModal(product_ids_str_for_package, package_type_for_package, ticket_id_to_remove) {
-        $('#collin-event-ticket-conflict-choice-modal').remove(); 
 
-        const modalTitle = ajax_obj.conflict_choice_title || 'Conflitto Ticket nel Carrello';
-        const modalText = ajax_obj.conflict_choice_text || 'Hai già un ticket per questo evento nel carrello. Se desideri acquistare questo pacchetto, il ticket esistente verrà rimosso.';
-        const btnContinueTicket = ajax_obj.conflict_choice_btn_cart || 'Vai al Carrello';
-        const btnSwitchPackage = ajax_obj.conflict_choice_btn_package || 'Passa al Pacchetto';
-
-        const modalHtml = `
-            <div id="collin-event-ticket-conflict-choice-modal" class="collin-event-modal-overlay">
-                <div class="collin-event-modal-content">
-                    <h3>${modalTitle}</h3>
-                    <p>${modalText}</p>
-                    <div class="collin-event-modal-actions">
-                        <button id="collin-modal-go-to-cart" class="button">${btnContinueTicket}</button>
-                        <button id="collin-modal-switch-to-package" class="button button-primary">${btnSwitchPackage}</button>
-                    </div>
-                </div>
-            </div>`;
-        $('body').append(modalHtml);
-        
-        setTimeout(function() { 
-            $('#collin-event-ticket-conflict-choice-modal').addClass('active');
-        }, 10); 
-
-        $('#collin-modal-go-to-cart').on('click', function(event) {
-            event.preventDefault();
-            const $modal = $('#collin-event-ticket-conflict-choice-modal');
-            $modal.removeClass('active');
-            setTimeout(function() { $modal.remove(); }, 300); 
-            
-            if (ajax_obj.cart_url) {
-                window.location.href = ajax_obj.cart_url;
-            } else {
-                $('.collin-event-package-button').removeClass('active'); 
-                $(detailsContainer).empty().hide(); 
-            }
-        });
-
-        $('#collin-modal-switch-to-package').on('click', function(event) {
-            event.preventDefault(); 
-            
-            const $modal = $('#collin-event-ticket-conflict-choice-modal');
-            $modal.removeClass('active');
-            setTimeout(function() { $modal.remove(); }, 300);
-            
-            $(detailsContainer).show().html('<p class="loading-message">' + (ajax_obj.removing_ticket_text || 'Rimozione ticket in corso...') + '</p>');
-
-            $.ajax({
-                url: ajax_obj.ajax_url,
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    action: 'collin_event_ajax_remove_ticket_from_cart',
-                    nonce: ajax_obj.nonce,
-                    ticket_product_id: ticket_id_to_remove
-                },
-                success: function(removeResponse) {
-                    if (removeResponse && removeResponse.success) {
-                        localStorage.setItem('collin_event_auto_click_package', package_type_for_package);
-                        window.location.reload(); 
-                    } else {
-                        let errorMsg = ajax_obj.error_remove_ticket_fail_text || 'Impossibile rimuovere il ticket esistente. Si prega di rimuoverlo manualmente dal carrello e riprovare.';
-                        if (removeResponse && removeResponse.data && removeResponse.data.message) {
-                            errorMsg = removeResponse.data.message; 
-                        }
-                        alert(errorMsg); 
-                        
-                        $(detailsContainer).empty().hide(); 
-                        $('.collin-event-package-button').removeClass('active'); 
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    if (jqXHR.responseText === '0' || jqXHR.status === 400) {
-                        alert(ajax_obj.error_nonce_fail_text || 'Errore di sicurezza o richiesta non valida durante la rimozione del ticket. Riprova o contatta l\'assistenza.');
-                    } else {
-                        alert(ajax_obj.error_ajax_text || 'Errore AJAX.');
-                    }
-                    
-                    $(detailsContainer).empty().hide();
-                    $('.collin-event-package-button').removeClass('active');
-                }
-            });
-        });
-    }
-
-    // --- GESTORE CLICK PULSANTI PACCHETTO (AGGIORNATO con nuovo modale) ---
+    // --- GESTORE CLICK PULSANTI PACCHETTO ---
     $('.collin-event-package-button').on('click', function() {
         const $clickedButton = $(this);
         const packageName = $clickedButton.text();
@@ -641,40 +444,8 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
 
         $('.collin-event-package-button').removeClass('active');
         $clickedButton.addClass('active');
-        
-        const product_ids_array_for_validation = product_ids_str ? product_ids_str.split(',').map(id => parseInt(id.trim())) : [];
-        $(detailsContainer).data('current-package-type', package_type);
-        $(detailsContainer).data('current-package-base-ids', product_ids_array_for_validation);
 
-        const event_ticket_id_to_check = ajax_obj.ticket_product_id ? parseInt(ajax_obj.ticket_product_id) : 0;
-
-        // Mostra messaggio di caricamento/verifica iniziale
-        $(detailsContainer).show().html('<p class="loading-message">' + (ajax_obj.checking_cart_text || 'Verifica carrello in corso...') + '</p>');
-
-        if (event_ticket_id_to_check > 0 && (package_type === 'shuttle_hotel' || package_type === 'complete_package')) {
-            $.ajax({
-                url: ajax_obj.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'collin_event_check_ticket_in_cart',
-                    nonce: ajax_obj.nonce,
-                    ticket_product_id: event_ticket_id_to_check
-                },
-                success: function(checkResponse) {
-                    if (checkResponse.success && checkResponse.data && checkResponse.data.ticket_in_cart) {
-                        showTicketConflictChoiceModal(product_ids_str, package_type, event_ticket_id_to_check);
-                    } else {
-                        loadProductDetails(product_ids_str, package_type);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    // In caso di errore nel check del ticket, procedi comunque a caricare i dettagli del pacchetto
-                    loadProductDetails(product_ids_str, package_type); 
-                }
-            });
-        } else {
-            loadProductDetails(product_ids_str, package_type);
-        }
+        loadProductDetails(product_ids_str, package_type);
     });
 
     // --- Gestore Click "Aggiungi al Carrello" ---
@@ -691,18 +462,17 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
             const $input = $(this); const quantity = parseInt($input.val());
             if (!$input.is(':disabled') && quantity > 0) { items_to_add.push({ product_id: $input.data('product-id'), quantity: quantity });}
         });
+        
         // Varianti (Navetta standard o complessa, Ticket, ecc.)
         $detailsWrapper.find('.collin-variation-qty').each(function() { 
             const $input = $(this); const quantity = parseInt($input.val());
-            // Verifica che l'input non sia all'interno di una navetta complessa con un numero insufficiente di radio selezionati.
-            // La validazione a livello di bottone dovrebbe già gestire questo, ma è una sicurezza in più qui.
             const $shuttleWrapper = $input.closest('.collin-shuttle-wrapper');
             let include_variation = true;
             if ($shuttleWrapper.length && $shuttleWrapper.data('shuttle-type') === 'complex') {
                 const totalAttrRadios = $shuttleWrapper.find('.collin-shuttle-attribute-selection').length;
                 const selectedAttrRadios = $shuttleWrapper.find('.collin-shuttle-attribute-selection input[type="radio"]:checked').length;
                 if (selectedAttrRadios !== totalAttrRadios) {
-                    include_variation = false; // Se non tutti gli attributi complessi sono selezionati, non includere
+                    include_variation = false;
                 }
             }
 
@@ -710,27 +480,22 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
                 items_to_add.push({ product_id: $input.data('product-id'), variation_id: $input.data('variation-id'), quantity: quantity });
             }
         });
-        // Hotel 
-        const $selectedRoomRadio = $detailsWrapper.find('.collin-hotel-variation-radio:checked');
-        if ($selectedRoomRadio.length > 0) {
-            const variationId = $selectedRoomRadio.val();
-            // Trova il contenitore genitore corretto, che sia il wrapper multi-luogo o quello per hotel semplice
-            const $hotelWrapper = $selectedRoomRadio.closest('.collin-hotel-wrapper, .collin-hotel-product-item');
-            const productId = $hotelWrapper.data('product-id');
-            // Trova l'input quantità relativo alla selezione
-            const $qtyInput = $hotelWrapper.find('.collin-hotel-selected-variation-qty');
+        
+        // Pacchetti
+        $detailsWrapper.find('.collin-package-qty').each(function() {
+            const $input = $(this);
+            const quantity = parseInt($input.val());
+            const variationId = $input.data('variation-id');
+            const productId = $input.data('product-id');
             
-            if ($qtyInput.length > 0) {
-                const quantity = parseInt($qtyInput.val());
-                if (quantity >= 1 && variationId && productId) {
-                    items_to_add.push({
-                        product_id: parseInt(productId),
-                        variation_id: parseInt(variationId),
-                        quantity: quantity
-                    });
-                }
+            if (!$input.is(':disabled') && quantity > 0 && variationId && productId) {
+                items_to_add.push({ 
+                    product_id: parseInt(productId), 
+                    variation_id: parseInt(variationId), 
+                    quantity: quantity 
+                });
             }
-        }
+        });
 
         if (items_to_add.length === 0) {
             alert(ajax_obj.error_no_items_text || 'Seleziona almeno un prodotto con quantità maggiore di zero.');
@@ -761,17 +526,6 @@ $('body').on('change', '.collin-hotel-location-radio', function() {
     $(detailsContainer).hide(); 
     if ($('.collin-event-package-button.active').length > 0 && $(detailsContainer).html().trim() !== "") {
         validateAddToCartButton();
-    }
-    
-    const autoClickPackageType = localStorage.getItem('collin_event_auto_click_package');
-    if (autoClickPackageType) {
-        localStorage.removeItem('collin_event_auto_click_package'); 
-        const $targetButton = $('.collin-event-package-button[data-package="' + autoClickPackageType + '"]');
-        if ($targetButton.length) {
-            setTimeout(function() {
-                $targetButton.trigger('click');
-            }, 500); 
-        }
     }
 
 });
