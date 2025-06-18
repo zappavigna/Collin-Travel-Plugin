@@ -125,7 +125,7 @@ function collin_event_ajax_get_product_variations() {
             $output_html .= '<div class="swiper-wrapper">';
             
             foreach ( $gallery_image_ids as $image_id ) {
-                $image_url = wp_get_attachment_image_url( $image_id, 'large' );
+                $image_url = wp_get_attachment_image_url( $image_id, 'full' );
                 $image_alt = get_post_meta( $image_id, '_wp_attachment_image_alt', true );
                 if ( $image_url ) {
                     $output_html .= '<div class="swiper-slide">';
@@ -179,7 +179,11 @@ function collin_event_ajax_get_product_variations() {
                         $taxonomy_name = str_replace('attribute_', '', $attr_full_key);
                         $attribute_label = wc_attribute_label($taxonomy_name, $product);
                         $attribute_index++;
-                        
+                        if ( $attribute_label=== 'Luogo') {
+                           $attribute_label = 'dove Pernottare';
+                        } elseif ( $attribute_label=== 'Date Hotel') {
+                           $attribute_label = 'la durata del soggiorno'; 
+                        }
                         $output_html .= '<div class="collin-package-attribute-selection" data-attribute-slug="' . esc_attr($taxonomy_name) . '" data-attribute-index="' . $attribute_index . '">';
                         $output_html .= '<h4>Scegli ' . esc_html($attribute_label) . ':</h4>';
                         $output_html .= '<div class="collin-package-attribute-options">';
@@ -578,14 +582,13 @@ function collin_event_ajax_get_product_variations() {
     
     if ( ! empty( $extra_ids ) && is_array( $extra_ids ) ) {
         $output_html .= '<div class="collin-event-extras-section">';
-        $output_html .= '<h3>Aggiungi Extra</h3><hr>';
+        $output_html .= '<h3 class="mt-3">Aggiungi Extra</h3>';
         
         foreach ( $extra_ids as $extra_id ) {
             $extra_product = wc_get_product( $extra_id );
             if ( ! $extra_product ) continue;
             
-            $output_html .= '<div class="collin-event-product-section" data-product-id="' . esc_attr( $extra_id ) . '">';
-            $output_html .= '<h4>' . esc_html( $extra_product->get_name() ) . '</h4>';
+            $output_html .= '<div class="collin-event-product-section" data-product-id="' . esc_attr( $extra_id ) . '">'; 
             
             if ( $extra_product->is_type( 'simple' ) ) {
                 $max_qty_extra = $extra_product->get_max_purchase_quantity();
