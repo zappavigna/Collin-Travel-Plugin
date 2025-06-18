@@ -1,0 +1,1013 @@
+/* Stili per i bottoni dei pacchetti */
+.collin-event-buttons-container {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: 1fr 1fr;
+  /* Due colonne di larghezza uguale */
+  grid-gap: 20px;
+  padding: 25px;
+  max-width: 580px;
+  margin: 0 auto 30px auto;
+}
+.collin-event-package-button {
+  color: #FFF !important;
+  border: 3px solid #FFF !important;
+  background-color: transparent !important;
+  text-transform: uppercase;
+  min-width: 170px;
+  padding: 10px 15px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+.collin-event-package-button:hover,
+.collin-event-package-button.active {
+  background-color: #FFF !important;
+  color: #000 !important;
+}
+
+/* === STILI PER DESCRIZIONE E GALLERIA PRODOTTI (TUTTI I TIPI) === */
+.collin-product-description {
+  color: #fff !important;
+  text-align: center;
+}
+
+.collin-product-description p {
+  margin-bottom: 15px;
+}
+
+.collin-product-description p:last-child {
+  margin-bottom: 0;
+}
+
+.collin-product-gallery { 
+  margin-bottom: 20px; 
+}
+
+.product-gallery-slider {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.product-gallery-slider .swiper-slide img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-gallery-slider .swiper-button-next,
+.product-gallery-slider .swiper-button-prev {
+  color: var(--primaryColor) !important;
+}
+
+.product-gallery-slider .swiper-button-next:after,
+.product-gallery-slider .swiper-button-prev:after {
+  font-size: 18px !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  backdrop-filter: blur(5px);
+}
+
+.product-gallery-slider .swiper-pagination-bullet {
+  background: var(--primaryColor);
+  opacity: 0.5;
+}
+
+.product-gallery-slider .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* Contenitore dei dettagli dei pacchetti */
+.collin-event-details-container {  
+  border-radius: 0px;
+  margin-bottom: 15px;
+  margin-top: 20px;
+  width: 90%;
+  margin: 0 auto;
+}
+.container-hotel {
+  background-color: #fff !important;
+  padding: 15px !important;
+}
+/* Stili per la selezione dei prodotti */
+.collin-event-product-section {
+  padding-bottom: 20px;
+  /*border-bottom: 1px dashed #eee;*/
+}
+.collin-event-product-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.collin-event-product-section h3 {
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #FFF;
+}
+.single_event-custom-layout hr.fullHr {
+    border-color: var(--primaryColor);
+    background: transparent !important;
+    border-width: 4px;
+    opacity: 1;
+    width: 80%;
+    max-width: 100%;
+}
+.collin-event-product-section hr {
+  border-color: var(--primaryColor);
+  border-width: 2px;
+  opacity: 1;
+  width: 70%;
+  margin: 10px auto 15px auto;
+    background: transparent !important;
+}
+.separatoreHotel {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.collin-event-product-section h3.prezzo {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+.collin-variation-item {
+    background: #FFF;
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.collin-product-item.collin-hotel-product-item {
+    background: #FFF;
+    border-radius: 5px;
+    padding: 15px;
+}
+.collin-hotel-gallery .swiper-slide img{
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 400px !important;
+}
+.variation-info {
+  line-height: 25px;
+}
+.variation-name {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.variation-description {
+  font-size: 14px;
+}
+.variation-price,
+.variation-price-hotel {
+  color: #7A7A7A;
+  font-size: 16px !important;
+}
+.collin-event-product-section h4.testoPreSelect {
+  text-align: left !important;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+select { 
+    border: 0 !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 0 !important; 
+}
+/* --- NUOVI STILI PER CHECKBOX (checkbox-wrapper-33) --- */
+.checkbox-wrapper-33 {
+  --s-xsmall: 0.625em;
+  --s-small: 1.2em;
+  --border-width: 1px;
+  --c-primary: var(--primaryColor);
+  --c-primary-20-percent-opacity: rgb(226 7 20 / 20%);
+  --c-primary-10-percent-opacity: rgb(226 7 20 / 10%);
+  --t-base: 0.4s;
+  --t-fast: 0.2s;
+  --e-in: ease-in;
+  --e-out: cubic-bezier(.11, .29, .18, .98);
+  margin-bottom: 10px;
+}
+.checkbox-wrapper-33 .visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.checkbox-wrapper-33 .checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  line-height: 1.5;
+  position: relative;
+  padding-left: 20px;
+  /* Aumentato per box più grande */
+}
+.checkbox-wrapper-33 .checkbox__symbol {
+  position: absolute;
+  /* Posizionato assolutamente rispetto a .checkbox */
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-width) solid var(--c-primary);
+  border-radius: 0.1em;
+  width: 1.5em;
+  /* 24px se font-size è 16px */
+  height: 1.5em;
+  transition: box-shadow var(--t-base) var(--e-out), background-color var(--t-base);
+  box-shadow: 0 0 0 0 var(--c-primary-10-percent-opacity);
+  background-color: #fff;
+}
+.checkbox-wrapper-33 .checkbox__symbol:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.5em;
+  /* Aumentato */
+  height: 0.5em;
+  /* Aumentato */
+  background-color: var(--c-primary-20-percent-opacity);
+  opacity: 0;
+  border-radius: 3em;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: 50% 50%;
+}
+.checkbox-wrapper-33 .checkbox .icon-checkbox {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke-width: 3;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+  color: var(--c-primary);
+  display: inline-block;
+}
+.checkbox-wrapper-33 .checkbox .icon-checkbox path {
+  transition: stroke-dashoffset var(--t-fast) var(--e-in);
+  stroke-dasharray: 30px, 31px;
+  stroke-dashoffset: 31px;
+}
+.checkbox-wrapper-33 .checkbox__textwrapper {
+  margin: 0;
+  color: #333;
+  padding-left: 20px;
+  /* Aggiungi un po' di spazio dal simbolo */
+}
+.checkbox-wrapper-33 .checkbox__trigger:checked+.checkbox__symbol .icon-checkbox path {
+  transition: stroke-dashoffset var(--t-base) var(--e-out);
+  stroke-dashoffset: 0px;
+}
+.checkbox-wrapper-33 .checkbox__trigger:checked+.checkbox__symbol:after {
+  -webkit-animation: ripple-33 1.5s var(--e-out);
+  animation: ripple-33 1.5s var(--e-out);
+}
+.checkbox-wrapper-33 .checkbox__trigger:focus+.checkbox__symbol {
+  box-shadow: 0 0 0 0.25em var(--c-primary-20-percent-opacity);
+}
+.checkbox-wrapper-33 .checkbox__trigger:disabled+.checkbox__symbol {
+  border-color: #ccc;
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+  color: #ccc;
+}
+.checkbox-wrapper-33 .checkbox__trigger:disabled~.checkbox__textwrapper {
+  color: #a0a0a0;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+@-webkit-keyframes ripple-33 {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(20);
+  }
+}
+@keyframes ripple-33 {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(20);
+  }
+}
+/* --- FINE NUOVI STILI CHECKBOX --- */
+/* Stili per il dropdown delle varianti (hotel) */
+.collin-event-variation-dropdown,
+.collin-shuttle-locations-wrapper,
+.collin-shuttle-attribute-options,
+.collin-hotel-locations-wrapper,
+.collin-hotel-room-options,
+.collin-package-quantity-wrapper,
+.collin-package-attribute-options {
+  width: 100%;
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 16px !important;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+.collin-event-product-section>label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+/* --- NUOVO: Stili per il contenitore globale azioni --- */
+.collin-event-global-actions {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+/* --- Stili per il wrapper della quantità (ora solo globale) --- */
+.collin-event-product-qty-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.collin-event-product-qty-wrapper>label {
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.swiper-button-next, .swiper-button-prev { 
+    color: var(--primaryColor) !important;
+}
+.swiper-button-next:after, .swiper-button-prev:after { 
+    font-size: 20px !important; 
+    padding: 5px 10px !important;
+    background: #fff;
+    border-radius: 20px;
+}
+/* --- NUOVI STILI PER SELETTORE QUANTITA' --- */
+.quantity-control,
+.qnt__select {
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 0px;
+  overflow: hidden;
+  background-color: transparent;
+  height: 35px;
+  justify-content: space-between;
+}
+.quantity-btn {
+  background: transparent;
+  border: 1px solid #E0E0E0;
+  padding: 0;
+  border-radius: 20px !important;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  color: #E0E0E0 !important;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.quantity-btn:hover {
+  background-color: var(--primaryColor);
+}
+.quantity-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+.quantity-btn:hover svg {
+  fill: #fff !important;
+}
+.quantity-btn:disabled,
+.quantity-btn:disabled svg {
+  background-color: #f8f8f8;
+  fill: #bbb;
+  cursor: not-allowed;
+}
+.quantity-input {
+  width: 40px;
+  height: 100%;
+  padding: 5px !important;
+  text-align: center; 
+  border: none !important; 
+  outline: none;
+  font-size: 1em;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background-color: #fff;
+}
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.quantity-input:disabled {
+  background-color: transparent !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+/* --- FINE NUOVI STILI QUANTITA' --- */
+/* Messaggio "Sold Out" 
+.sold-out-message {
+  padding: 8px 15px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}*/
+.sold-out-message {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 15px;
+}
+.sold-out-message:before{ 
+  content: "";  
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  display: block;
+  border-radius: 20px;
+
+}
+.collin-event-global-actions .sold-out-message {
+  flex-grow: 1;
+  /* Fa espandere il messaggio se è l'unico elemento */
+}
+/* Stili per il bottone Aggiungi al Carrello */
+.collin-event-add-to-cart-button {
+  background: var(--primary) !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+  display: block !important;
+  margin-bottom: 15px !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-align: center;
+  color: #fff; 
+  padding: 12px 25px;
+  cursor: pointer;
+  border: 2px solid var(--primaryColor) !important;
+  font-size: 18px;
+  transition: background-color 0.3s ease;
+}
+.collin-event-add-to-cart-button:hover:not(:disabled) {
+  background-color: #e2e6ea !important;
+}
+.collin-event-add-to-cart-button:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+  border: 2px solid #cccccc !important;
+  opacity: 0.8;
+}
+.collin-event-add-to-cart-button:hover:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+  color: #fff !important;
+}
+
+/* Stili per messaggi di caricamento/errore */
+.collin-event-details-container p.loading-message,
+.collin-event-details-container p.error-message {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  padding: 15px;
+}
+.collin-event-details-container p.error-message {
+  color: #d9534f;
+  font-weight: bold;
+}
+/* Stili per elementi disabilitati (dropdown) */
+.collin-event-variation-dropdown option:disabled {
+  color: #a0a0a0 !important;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  font-style: italic;
+  background-color: #f0f0f0;
+}
+/* Stili per il popup di conflitto carrello */
+.collin-event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+.collin-event-modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 0px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+.collin-event-modal-content h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.collin-event-modal-content p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+.collin-event-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.collin-event-modal-actions .button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: 150px;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.collin-event-modal-actions .button.button-primary {
+  background-color: var(--primaryColor);
+  color: #fff;
+  border: 1px solid var(--primaryColor);
+}
+.collin-event-modal-actions .button.button-primary:hover {
+  background-color: var(--primaryColor);
+  border-color: var(--primaryColor);
+}
+.collin-event-modal-actions .button {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid var(--primaryColor);
+}
+.collin-event-modal-actions .button:hover {
+  background-color: #e2e6ea;
+  border-color: #adadad;
+}
+
+.collin-event-combined-actions {
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-wrap: wrap;
+  /* Permette agli elementi di andare a capo se non c'è spazio */
+  justify-content: space-between;
+  /* Spazio tra qtà e bottone se sono su una riga */
+  align-items: center;
+  gap: 20px;
+  /* Spazio tra il blocco quantità e il bottone */
+}
+/* Wrapper per il selettore quantità GLOBALE nel blocco combinato */
+.collin-event-combined-actions .collin-event-product-qty-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  /* Potresti voler dare una larghezza fissa o flex-grow se necessario */
+}
+.collin-event-combined-actions .collin-event-product-qty-wrapper>label {
+  display: block;
+  font-weight: 400;
+  width: 50%;
+}
+
+/* Risolve il problema delle varianti duplicate nel carrello */
+.woocommerce-cart-form .cart_item .variation + .variation {
+    display: none;
+}
+
+.collin-shuttle-wrapper h4,
+.collin-hotel-wrapper h4,
+.collin-package-attribute-selection h4 {
+  color: #fff !important;
+  margin-top: 20px !important;
+  font-size: 20px !important;
+  text-transform: uppercase !important;
+}
+.collin-shuttle-locations-wrapper .radio,
+.collin-shuttle-attribute-options .radio,
+.collin-hotel-options-wrapper .radio,
+.collin-hotel-locations-wrapper .radio,
+.collin-hotel-room-options .radio,
+.collin-package-attribute-options .radio,
+.collin-package-quantity-wrapper .radio {
+  display: block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-align: left;
+}
+
+.collin-shuttle-locations-wrapper .radio + .radio,
+.collin-shuttle-attribute-options .radio + .radio,
+.collin-hotel-options-wrapper .radio + .radio,
+.collin-hotel-locations-wrapper .radio + .radio,
+.collin-hotel-room-options .radio + .radio,
+.collin-package-attribute-options .radio + .radio,
+.collin-package-quantity-wrapper .radio + .radio {
+  margin-top: 12px;
+}
+
+.collin-shuttle-locations-wrapper .radio input,
+.collin-shuttle-attribute-options .radio input,
+.collin-hotel-options-wrapper .radio input,
+.collin-hotel-locations-wrapper .radio input,
+.collin-hotel-room-options .radio input,
+.collin-package-attribute-options .radio input,
+.collin-package-quantity-wrapper .radio input {
+  display: none;
+}
+
+.collin-shuttle-locations-wrapper .radio input + span,
+.collin-shuttle-attribute-options .radio input + span,
+.collin-hotel-options-wrapper .radio input + span,
+.collin-hotel-locations-wrapper .radio input + span,
+.collin-hotel-room-options .radio input + span,
+.collin-package-attribute-options .radio input + span,
+.collin-package-quantity-wrapper .radio input + span {
+  display: inline-block;
+  position: relative;
+  padding-left: 30px;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.collin-shuttle-locations-wrapper .radio input + span:before,
+.collin-shuttle-attribute-options .radio input + span:before,
+.collin-hotel-options-wrapper .radio input + span:before,
+.collin-hotel-locations-wrapper .radio input + span:before,
+.collin-hotel-room-options .radio input + span:before,
+.collin-package-attribute-options .radio input + span:before,
+.collin-package-quantity-wrapper .radio input + span:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 5px;
+  left: 0px;
+  border-radius: 50%;
+  margin-right: 5px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.collin-shuttle-locations-wrapper .radio input + span:after,
+.collin-shuttle-attribute-options .radio input + span:after,
+.collin-hotel-options-wrapper .radio input + span:after,
+.collin-hotel-locations-wrapper .radio input + span:after,
+.collin-hotel-room-options .radio input + span:after,
+.collin-package-attribute-options .radio input + span:after,
+.collin-package-quantity-wrapper .radio input + span:after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--primaryColor);
+  position: absolute;
+  border-radius: 50%;
+  top: 8px;
+  left: 3px;
+  opacity: 0;
+  transform: scale(0, 0);
+  transition: all 0.2s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+}
+
+.collin-shuttle-locations-wrapper .radio input:checked + span:after,
+.collin-shuttle-attribute-options .radio input:checked + span:after,
+.collin-hotel-options-wrapper .radio input:checked + span:after,
+.collin-hotel-locations-wrapper .radio input:checked + span:after,
+.collin-hotel-room-options .radio input:checked + span:after,
+.collin-package-attribute-options .radio input:checked + span:after,
+.collin-package-quantity-wrapper .radio input:checked + span:after {
+  opacity: 1;
+  transform: scale(1, 1);
+}
+.collin-package-quantity-wrapper {
+  margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collin-package-quantity-wrapper h4 {
+  margin-bottom: 5px !important;
+}
+.collin-package-quantity-wrapper .selected-variation-info {
+  margin-bottom: 0 !important;
+}
+/*Nominativi*/ 
+.collin-checkout-fields {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+.collin-checkout-fields h3 {
+    margin-bottom: 10px;
+}
+.collin-checkout-fields h4 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+.collin-attendee-names-for-product {
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 3px solid #f0f0f0;
+}
+.collin-attendee-name-field {
+    margin-bottom: 10px !important; /* Assicura un po' di spazio */
+}
+/* Stili per la selezione a catena (Navetta) */
+.chained-selection-wrapper .chained-step {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.chained-selection-wrapper .chained-step:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.chained-selection-wrapper h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.chained-options-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chained-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chained-btn:hover:not(:disabled) {
+    border-color: #000;
+}
+
+.chained-btn.selected {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.chained-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+/* Stile per le righe delle date */
+.chained-date-item .quantity-control .quantity-btn:disabled,
+.chained-date-item .quantity-control .quantity-input:disabled {
+    background-color: #f9f9f9;
+    opacity: 0.5;
+    cursor: not-allowed;
+}/* Stili per la selezione a catena (Navetta) */
+.chained-selection-wrapper .chained-step {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.chained-selection-wrapper .chained-step:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.chained-selection-wrapper h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.chained-options-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chained-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chained-btn:hover:not(:disabled) {
+    border-color: #000;
+}
+
+.chained-btn.selected {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.chained-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+/* Stile per le righe delle date */
+.chained-date-item .quantity-control .quantity-btn:disabled,
+.chained-date-item .quantity-control .quantity-input:disabled {
+    background-color: #f9f9f9;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+@media screen and (min-width:980px) { 
+  .collin-event-details-container {   
+    padding: 20px;
+  }
+  
+  /* Galleria prodotti più grande su desktop */
+  .product-gallery-slider .swiper-slide img {
+    height: 400px;
+  }   
+}
+
+@media screen and (max-width:768px) { 
+  .container-hotel *.px-4,
+  .collin-hotel-short-description.px-4,
+  .collin-hotel-gallery.px-4 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .hotel-quantity-control {
+    display: block;
+  }
+  .hotel-selection-details {
+    width: 100% !important;
+    flex-basis: 100% !important;
+  }
+  .hotel-quantity-control .qnt__select {
+    width: 100% !important;
+    flex-basis: 100% !important;
+  }
+  .hotel-quantity-control .variation-name.selected-variation-description { 
+    font-size: 17px !important;
+  }
+  .hotel-selection-details {
+    min-width: 250px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    border-top: 1px solid var(--primaryColor);
+    padding-top: 10px;
+  }
+  
+  /* Responsive per descrizione e galleria prodotti */
+  .collin-product-description {
+    padding: 15px;
+    font-size: 14px;
+  }
+  
+  .collin-product-gallery {
+    padding: 10px;
+  }
+  
+  .product-gallery-slider .swiper-slide img {
+    height: 250px;
+  }
+}
+
+@media screen and (max-width:580px) {
+  .collin-event-package-button {
+    padding: 10px 5px;
+  }
+  .collin-event-product-section {
+    padding: 0px;
+  }
+  .checkbox-wrapper-33 .checkbox__textwrapper {
+    font-size: 16px;
+    padding-left: 5px;
+    /* Aggiungi un po' di spazio dal simbolo */
+  }
+  .collin-event-product-section h3 {
+    font-size: 26px !important;
+  }
+  .collin-variation-item .variation-name {
+    font-size: 16px !important;
+  }
+  .checkbox-wrapper-33 .checkbox__symbol {
+    width: 20px;
+    height: 20px;
+  }
+  .collin-event-combined-actions .collin-event-product-qty-wrapper>label {
+    font-size: 14px !important;
+  }
+  .collin-shuttle-locations-wrapper .radio input + span, 
+  .collin-shuttle-attribute-options .radio input + span, 
+  .collin-hotel-options-wrapper .radio input + span {
+    font-size: 16px;
+  }
+  
+  .hotel-selection-details { 
+    font-size: 16px;
+  }
+  .quantity-control.hotel-quantity-control .qnt__select h3 { 
+    font-size: 19px !important;
+    text-align: left;
+  }
+  .collin-product-item.collin-hotel-product-item {
+    padding: 0 !important;
+  }
+  
+  /* Responsive per descrizione e galleria prodotti mobile */
+  .collin-product-description {
+    padding: 0px !important;
+    font-size: 17px;
+    line-height: 19px;
+  }
+  .collin-event-extras-section {
+    
+  }
+  .product-gallery-slider .swiper-slide img {
+    height: 200px;
+  }
+}
+
+
+@media screen and (max-width:480px) {
+  .collin-event-details-container {
+    width: 100% !important;
+  }
+}
+@media screen and (max-width:454px) {
+  .collin-event-package-button {
+    font-size: 17px;
+  }
+  .variation-description {
+    font-size: 12px !important;
+    line-height: 14px !important;
+  }
+  .variation-price, .variation-price-hotel { 
+      font-size: 14px !important;
+      line-height: 16px !important; 
+  }
+}

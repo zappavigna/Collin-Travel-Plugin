@@ -1,0 +1,71 @@
+/* Stili per la galleria nel backend */
+.collin-gallery-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.gallery-preview-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+.gallery-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+.gallery-preview-item .remove-image {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #d63638;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Stili per le FAQ nel backend */
+#collin-faq-repeater .faq-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccd0d4;
+    margin-bottom: 10px;
+    background: #fff;
+}
+#collin-faq-repeater .faq-row.empty-row {
+    display: none;
+}
+#collin-faq-repeater .faq-handle {
+    cursor: move;
+    font-size: 16px;
+    color: #555;
+    padding-top: 5px;
+}
+#collin-faq-repeater .faq-fields {
+    flex-grow: 1;
+}
+#collin-faq-repeater .faq-fields label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+#collin-faq-repeater .faq-fields input,
+#collin-faq-repeater .faq-fields textarea {
+    width: 100%;
+    margin-bottom: 10px;
+}
+#collin-faq-repeater .faq-actions {
+    display: flex;
+    align-items: center;
+}
