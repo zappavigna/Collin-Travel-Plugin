@@ -28,12 +28,8 @@
 
 /* === STILI PER DESCRIZIONE E GALLERIA PRODOTTI (TUTTI I TIPI) === */
 .collin-product-description {
-  background-color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  color: #333;
-  line-height: 1.6;
+  color: #fff !important;
+  text-align: center;
 }
 
 .collin-product-description p {
@@ -44,11 +40,8 @@
   margin-bottom: 0;
 }
 
-.collin-product-gallery {
-  background-color: #fff;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 8px;
+.collin-product-gallery { 
+  margin-bottom: 20px; 
 }
 
 .product-gallery-slider {
@@ -117,6 +110,14 @@
   margin-top: 0;
   margin-bottom: 5px;
   color: #FFF;
+}
+.single_event-custom-layout hr.fullHr {
+    border-color: var(--primaryColor);
+    background: transparent !important;
+    border-width: 4px;
+    opacity: 1;
+    width: 80%;
+    max-width: 100%;
 }
 .collin-event-product-section hr {
   border-color: var(--primaryColor);
@@ -323,7 +324,9 @@ select {
 .collin-shuttle-locations-wrapper,
 .collin-shuttle-attribute-options,
 .collin-hotel-locations-wrapper,
-.collin-hotel-room-options {
+.collin-hotel-room-options,
+.collin-package-quantity-wrapper,
+.collin-package-attribute-options {
   width: 100%;
   padding: 30px 15px;
   border: 1px solid #ccc;
@@ -621,7 +624,8 @@ select {
 }
 
 .collin-shuttle-wrapper h4,
-.collin-hotel-wrapper h4 {
+.collin-hotel-wrapper h4,
+.collin-package-attribute-selection h4 {
   color: #fff !important;
   margin-top: 20px !important;
   font-size: 20px !important;
@@ -729,7 +733,18 @@ select {
   opacity: 1;
   transform: scale(1, 1);
 }
-
+.collin-package-quantity-wrapper {
+  margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collin-package-quantity-wrapper h4 {
+  margin-bottom: 5px !important;
+}
+.collin-package-quantity-wrapper .selected-variation-info {
+  margin-bottom: 0 !important;
+}
 /*Nominativi*/ 
 .collin-checkout-fields {
     margin-top: 20px;
@@ -925,6 +940,9 @@ select {
   .collin-event-package-button {
     padding: 10px 5px;
   }
+  .collin-event-product-section {
+    padding: 0px;
+  }
   .checkbox-wrapper-33 .checkbox__textwrapper {
     font-size: 16px;
     padding-left: 5px;
@@ -962,11 +980,13 @@ select {
   
   /* Responsive per descrizione e galleria prodotti mobile */
   .collin-product-description {
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.5;
+    padding: 0px !important;
+    font-size: 17px;
+    line-height: 19px;
   }
-  
+  .collin-event-extras-section {
+    
+  }
   .product-gallery-slider .swiper-slide img {
     height: 200px;
   }
