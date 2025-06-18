@@ -10,6 +10,10 @@ function collin_event_add_all_metaboxes() {
     
     // --- METABOX PER IL POST TYPE 'event' ---
     add_meta_box( 'collin_event_product_links', 'Prodotti WooCommerce Collegati', 'collin_event_render_product_links_metabox', 'event', 'side', 'high' );
+    add_meta_box( 'collin_event_package_shuttle_hotel', 'Pacchetto Navetta + Hotel', 'collin_event_render_package_shuttle_hotel_metabox', 'event', 'side', 'default' );
+    add_meta_box( 'collin_event_package_complete', 'Pacchetto Completo', 'collin_event_render_package_complete_metabox', 'event', 'side', 'default' );
+    add_meta_box( 'collin_event_extra_shuttle_hotel', 'Extra Pacchetto Navetta + Hotel', 'collin_event_render_extra_shuttle_hotel_metabox', 'event', 'side', 'default' );
+    add_meta_box( 'collin_event_extra_complete', 'Extra Pacchetto Completo', 'collin_event_render_extra_complete_metabox', 'event', 'side', 'default' );
     add_meta_box( 'collin_event_faq_category', 'Collega Categoria FAQ', 'collin_event_render_faq_category_metabox', 'event', 'side', 'default' );
     add_meta_box( 'collin_event_video_url', 'URL Video Hero', 'collin_event_render_video_url_metabox', 'event', 'normal', 'high' );
     add_meta_box( 'collin_event_product_message', 'Messaggio Aggiuntivo Prodotto', 'collin_event_render_product_message_metabox', 'event', 'normal', 'default' );
@@ -45,12 +49,114 @@ function collin_event_render_product_links_metabox( $post ) {
     wp_nonce_field( 'collin_event_save_metaboxes', 'collin_event_metabox_nonce' );
     $ticket_product_id  = get_post_meta( $post->ID, '_ticket_product_id', true );
     $shuttle_product_id = get_post_meta( $post->ID, '_shuttle_product_id', true );
-    $hotel_product_id   = get_post_meta( $post->ID, '_hotel_product_id', true );
     $products = wc_get_products( array( 'limit' => -1, 'orderby' => 'title', 'order' => 'ASC' ) );
     ?>
     <p><label for="ticket_product_id"><strong>Ticket:</strong></label><br><select id="ticket_product_id" name="ticket_product_id" style="width:100%;"><option value="">-- Seleziona --</option><?php foreach($products as $p){printf('<option value="%s"%s>%s</option>',esc_attr($p->get_id()),selected($ticket_product_id,$p->get_id(),false),esc_html($p->get_name()));}?></select></p>
     <p><label for="shuttle_product_id"><strong>Navetta:</strong></label><br><select id="shuttle_product_id" name="shuttle_product_id" style="width:100%;"><option value="">-- Seleziona --</option><?php foreach($products as $p){printf('<option value="%s"%s>%s</option>',esc_attr($p->get_id()),selected($shuttle_product_id,$p->get_id(),false),esc_html($p->get_name()));}?></select></p>
-    <p><label for="hotel_product_id"><strong>Hotel:</strong></label><br><select id="hotel_product_id" name="hotel_product_id" style="width:100%;"><option value="">-- Seleziona --</option><?php foreach($products as $p){printf('<option value="%s"%s>%s</option>',esc_attr($p->get_id()),selected($hotel_product_id,$p->get_id(),false),esc_html($p->get_name()));}?></select></p>
+    <?php
+}
+
+function collin_event_render_package_shuttle_hotel_metabox( $post ) {
+    $selected_package_shuttle_hotel_id = get_post_meta( $post->ID, '_package_shuttle_hotel_id', true );
+    
+    // Recupera i prodotti della categoria "Pacchetto Navetta + Hotel"
+    $package_products = wc_get_products( array(
+        'limit' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'category' => array('pacchetto-navetta-hotel'), // slug della categoria
+        'status' => 'publish'
+    ) );
+    ?>
+    <p><label for="package_shuttle_hotel_id"><strong>Seleziona Pacchetto Navetta + Hotel:</strong></label></p>
+    <select name="package_shuttle_hotel_id" id="package_shuttle_hotel_id" style="width:100%;">
+        <option value="">-- Seleziona --</option>
+        <?php foreach ( $package_products as $product ) : ?>
+            <option value="<?php echo esc_attr( $product->get_id() ); ?>" <?php selected( $selected_package_shuttle_hotel_id, $product->get_id() ); ?>>
+                <?php echo esc_html( $product->get_name() ); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">Prodotti dalla categoria "Pacchetto Navetta + Hotel"</p>
+    <?php
+}
+
+function collin_event_render_package_complete_metabox( $post ) {
+    $selected_package_complete_id = get_post_meta( $post->ID, '_package_complete_id', true );
+    
+    // Recupera i prodotti della categoria "Pacchetto Completo"
+    $package_products = wc_get_products( array(
+        'limit' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'category' => array('pacchetto-completo'), // slug della categoria
+        'status' => 'publish'
+    ) );
+    ?>
+    <p><label for="package_complete_id"><strong>Seleziona Pacchetto Completo:</strong></label></p>
+    <select name="package_complete_id" id="package_complete_id" style="width:100%;">
+        <option value="">-- Seleziona --</option>
+        <?php foreach ( $package_products as $product ) : ?>
+            <option value="<?php echo esc_attr( $product->get_id() ); ?>" <?php selected( $selected_package_complete_id, $product->get_id() ); ?>>
+                <?php echo esc_html( $product->get_name() ); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">Prodotti dalla categoria "Pacchetto Completo"</p>
+    <?php
+}
+
+function collin_event_render_extra_shuttle_hotel_metabox( $post ) {
+    $selected_extra_shuttle_hotel_ids = get_post_meta( $post->ID, '_extra_shuttle_hotel_ids', true );
+    if ( ! is_array( $selected_extra_shuttle_hotel_ids ) ) {
+        $selected_extra_shuttle_hotel_ids = ! empty( $selected_extra_shuttle_hotel_ids ) ? explode( ',', $selected_extra_shuttle_hotel_ids ) : array();
+    }
+    
+    // Recupera i prodotti della categoria "Extra Navetta + Hotel"
+    $extra_products = wc_get_products( array(
+        'limit' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'category' => array('extra-navetta-hotel'), // slug della categoria
+        'status' => 'publish'
+    ) );
+    ?>
+    <p><label for="extra_shuttle_hotel_ids"><strong>Seleziona Extra Navetta + Hotel:</strong></label></p>
+    <select name="extra_shuttle_hotel_ids[]" id="extra_shuttle_hotel_ids" multiple style="width:100%; height: 120px;">
+        <?php foreach ( $extra_products as $product ) : ?>
+            <option value="<?php echo esc_attr( $product->get_id() ); ?>" <?php echo in_array( $product->get_id(), $selected_extra_shuttle_hotel_ids ) ? 'selected' : ''; ?>>
+                <?php echo esc_html( $product->get_name() ); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">Prodotti dalla categoria "Extra Navetta + Hotel". Usa Ctrl+Click per selezione multipla.</p>
+    <?php
+}
+
+function collin_event_render_extra_complete_metabox( $post ) {
+    $selected_extra_complete_ids = get_post_meta( $post->ID, '_extra_complete_ids', true );
+    if ( ! is_array( $selected_extra_complete_ids ) ) {
+        $selected_extra_complete_ids = ! empty( $selected_extra_complete_ids ) ? explode( ',', $selected_extra_complete_ids ) : array();
+    }
+    
+    // Recupera i prodotti della categoria "Extra Completo"
+    $extra_products = wc_get_products( array(
+        'limit' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'category' => array('extra-completo'), // slug della categoria
+        'status' => 'publish'
+    ) );
+    ?>
+    <p><label for="extra_complete_ids"><strong>Seleziona Extra Completo:</strong></label></p>
+    <select name="extra_complete_ids[]" id="extra_complete_ids" multiple style="width:100%; height: 120px;">
+        <?php foreach ( $extra_products as $product ) : ?>
+            <option value="<?php echo esc_attr( $product->get_id() ); ?>" <?php echo in_array( $product->get_id(), $selected_extra_complete_ids ) ? 'selected' : ''; ?>>
+                <?php echo esc_html( $product->get_name() ); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <p class="description">Prodotti dalla categoria "Extra Completo". Usa Ctrl+Click per selezione multipla.</p>
     <?php
 }
 
@@ -187,7 +293,24 @@ function collin_event_save_all_metabox_data( $post_id, $post ) {
     if ( $post->post_type == 'event' ) {
         if (isset($_POST['ticket_product_id'])) { update_post_meta($post_id, '_ticket_product_id', absint($_POST['ticket_product_id'])); }
         if (isset($_POST['shuttle_product_id'])) { update_post_meta($post_id, '_shuttle_product_id', absint($_POST['shuttle_product_id'])); }
-        if (isset($_POST['hotel_product_id'])) { update_post_meta($post_id, '_hotel_product_id', absint($_POST['hotel_product_id'])); }
+        if (isset($_POST['package_shuttle_hotel_id'])) { update_post_meta($post_id, '_package_shuttle_hotel_id', absint($_POST['package_shuttle_hotel_id'])); }
+        if (isset($_POST['package_complete_id'])) { update_post_meta($post_id, '_package_complete_id', absint($_POST['package_complete_id'])); }
+        
+        // Salvataggio degli extra (array multipli)
+        if (isset($_POST['extra_shuttle_hotel_ids']) && is_array($_POST['extra_shuttle_hotel_ids'])) { 
+            $extra_shuttle_hotel_ids = array_map('absint', $_POST['extra_shuttle_hotel_ids']);
+            update_post_meta($post_id, '_extra_shuttle_hotel_ids', $extra_shuttle_hotel_ids); 
+        } else {
+            delete_post_meta($post_id, '_extra_shuttle_hotel_ids');
+        }
+        
+        if (isset($_POST['extra_complete_ids']) && is_array($_POST['extra_complete_ids'])) { 
+            $extra_complete_ids = array_map('absint', $_POST['extra_complete_ids']);
+            update_post_meta($post_id, '_extra_complete_ids', $extra_complete_ids); 
+        } else {
+            delete_post_meta($post_id, '_extra_complete_ids');
+        }
+        
         if (isset($_POST['product_message'])) { update_post_meta($post_id, '_product_message', sanitize_textarea_field($_POST['product_message'])); }
         if (isset($_POST['festival_details_text'])) { update_post_meta($post_id, '_festival_details_text', sanitize_textarea_field($_POST['festival_details_text'])); }
         if (isset($_POST['lineup_pdf_id'])) { update_post_meta($post_id, '_lineup_pdf_id', absint($_POST['lineup_pdf_id'])); }
