@@ -1,4 +1,3 @@
-
 /* Stili per i bottoni dei pacchetti */
 .collin-event-buttons-container {
   display: grid;
@@ -26,6 +25,67 @@
   background-color: #FFF !important;
   color: #000 !important;
 }
+
+/* === STILI PER DESCRIZIONE E GALLERIA PRODOTTI (TUTTI I TIPI) === */
+.collin-product-description {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.collin-product-description p {
+  margin-bottom: 15px;
+}
+
+.collin-product-description p:last-child {
+  margin-bottom: 0;
+}
+
+.collin-product-gallery {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.product-gallery-slider {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.product-gallery-slider .swiper-slide img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-gallery-slider .swiper-button-next,
+.product-gallery-slider .swiper-button-prev {
+  color: var(--primaryColor) !important;
+}
+
+.product-gallery-slider .swiper-button-next:after,
+.product-gallery-slider .swiper-button-prev:after {
+  font-size: 18px !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  backdrop-filter: blur(5px);
+}
+
+.product-gallery-slider .swiper-pagination-bullet {
+  background: var(--primaryColor);
+  opacity: 0.5;
+}
+
+.product-gallery-slider .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
 /* Contenitore dei dettagli dei pacchetti */
 .collin-event-details-container {  
   border-radius: 0px;
@@ -571,7 +631,9 @@ select {
 .collin-shuttle-attribute-options .radio,
 .collin-hotel-options-wrapper .radio,
 .collin-hotel-locations-wrapper .radio,
-.collin-hotel-room-options .radio { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio,
+.collin-package-attribute-options .radio,
+.collin-package-quantity-wrapper .radio {
   display: block;
   cursor: pointer;
   -webkit-user-select: none;
@@ -585,7 +647,9 @@ select {
 .collin-shuttle-attribute-options .radio + .radio,
 .collin-hotel-options-wrapper .radio + .radio,
 .collin-hotel-locations-wrapper .radio + .radio,
-.collin-hotel-room-options .radio + .radio { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio + .radio,
+.collin-package-attribute-options .radio + .radio,
+.collin-package-quantity-wrapper .radio + .radio {
   margin-top: 12px;
 }
 
@@ -593,7 +657,9 @@ select {
 .collin-shuttle-attribute-options .radio input,
 .collin-hotel-options-wrapper .radio input,
 .collin-hotel-locations-wrapper .radio input,
-.collin-hotel-room-options .radio input { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio input,
+.collin-package-attribute-options .radio input,
+.collin-package-quantity-wrapper .radio input {
   display: none;
 }
 
@@ -601,7 +667,9 @@ select {
 .collin-shuttle-attribute-options .radio input + span,
 .collin-hotel-options-wrapper .radio input + span,
 .collin-hotel-locations-wrapper .radio input + span,
-.collin-hotel-room-options .radio input + span { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio input + span,
+.collin-package-attribute-options .radio input + span,
+.collin-package-quantity-wrapper .radio input + span {
   display: inline-block;
   position: relative;
   padding-left: 30px;
@@ -614,7 +682,9 @@ select {
 .collin-shuttle-attribute-options .radio input + span:before,
 .collin-hotel-options-wrapper .radio input + span:before,
 .collin-hotel-locations-wrapper .radio input + span:before,
-.collin-hotel-room-options .radio input + span:before { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio input + span:before,
+.collin-package-attribute-options .radio input + span:before,
+.collin-package-quantity-wrapper .radio input + span:before {
   content: '';
   display: block;
   position: absolute;
@@ -632,7 +702,9 @@ select {
 .collin-shuttle-attribute-options .radio input + span:after,
 .collin-hotel-options-wrapper .radio input + span:after,
 .collin-hotel-locations-wrapper .radio input + span:after,
-.collin-hotel-room-options .radio input + span:after { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio input + span:after,
+.collin-package-attribute-options .radio input + span:after,
+.collin-package-quantity-wrapper .radio input + span:after {
   content: '';
   display: block;
   width: 10px;
@@ -651,10 +723,13 @@ select {
 .collin-shuttle-attribute-options .radio input:checked + span:after,
 .collin-hotel-options-wrapper .radio input:checked + span:after,
 .collin-hotel-locations-wrapper .radio input:checked + span:after,
-.collin-hotel-room-options .radio input:checked + span:after { /* Aggiunto .collin-hotel-room-options */
+.collin-hotel-room-options .radio input:checked + span:after,
+.collin-package-attribute-options .radio input:checked + span:after,
+.collin-package-quantity-wrapper .radio input:checked + span:after {
   opacity: 1;
   transform: scale(1, 1);
 }
+
 /*Nominativi*/ 
 .collin-checkout-fields {
     margin-top: 20px;
@@ -794,6 +869,11 @@ select {
 @media screen and (min-width:980px) { 
   .collin-event-details-container {   
     padding: 20px;
+  }
+  
+  /* Galleria prodotti più grande su desktop */
+  .product-gallery-slider .swiper-slide img {
+    height: 400px;
   }   
 }
 
@@ -826,6 +906,19 @@ select {
     padding-top: 10px;
   }
   
+  /* Responsive per descrizione e galleria prodotti */
+  .collin-product-description {
+    padding: 15px;
+    font-size: 14px;
+  }
+  
+  .collin-product-gallery {
+    padding: 10px;
+  }
+  
+  .product-gallery-slider .swiper-slide img {
+    height: 250px;
+  }
 }
 
 @media screen and (max-width:580px) {
@@ -865,6 +958,17 @@ select {
   }
   .collin-product-item.collin-hotel-product-item {
     padding: 0 !important;
+  }
+  
+  /* Responsive per descrizione e galleria prodotti mobile */
+  .collin-product-description {
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .product-gallery-slider .swiper-slide img {
+    height: 200px;
   }
 }
 
